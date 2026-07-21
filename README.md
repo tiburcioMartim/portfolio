@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfólio — Martim Tiburcio
 
-## Getting Started
+Site pessoal de [Martim Tiburcio](https://www.linkedin.com/in/martimtiburcio-dev/), desenvolvedor full stack.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4
+
+## Como rodar
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run build   # build de produção
+npm run lint    # ESLint
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Organização
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O conteúdo está separado da apresentação, para que atualizar um projeto ou um
+número não exija tocar em componente algum:
 
-## Learn More
+```
+src/
+├── data/
+│   ├── perfil.ts       # dados pessoais, stack, método, experiência
+│   └── projetos.ts     # os projetos exibidos, com números e stack
+├── components/         # uma seção por arquivo
+└── app/
+    ├── layout.tsx      # metadados, fontes e script anti-flash do tema
+    ├── page.tsx        # composição das seções
+    └── globals.css     # tokens de tema (claro/escuro) e utilitários
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Decisões
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Página estática.** Todo o conteúdo é conhecido em tempo de build; não há
+  motivo para renderizar no servidor a cada visita.
+- **Tema no DOM, não no estado do React.** A classe do `<html>` é escrita por um
+  script inline antes da primeira pintura, e o componente lê essa fonte única com
+  `useSyncExternalStore` — sem flash e sem estado paralelo que possa divergir.
+- **Contato por `mailto` com assunto preenchido.** Um formulário exigiria backend
+  ou serviço de terceiro; o assunto já separa quem chega com vaga de quem chega
+  com projeto.

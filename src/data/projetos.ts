@@ -1,0 +1,176 @@
+export type Projeto = {
+  slug: string;
+  nome: string;
+  tipo: "Trabalho" | "Cliente" | "Produto próprio" | "Open source";
+  periodo: string;
+  /** Chamada curta, entendível por quem não é técnico. */
+  tagline: string;
+  problema: string;
+  solucao: string;
+  /** Entregas concretas — o que existe e funciona. */
+  destaques: readonly string[];
+  /** Números medidos no próprio repositório, não estimados. */
+  numeros: readonly { valor: string; label: string }[];
+  stack: readonly string[];
+  link?: { href: string; rotulo: string };
+  /** Código fechado: sem link de repositório. */
+  codigoFechado: boolean;
+};
+
+export const projetos: readonly Projeto[] = [
+  {
+    slug: "erp-hospitalar",
+    nome: "ERP Hospitalar",
+    tipo: "Trabalho",
+    periodo: "2026",
+    tagline: "Modernização do sistema que sustenta uma rede hospitalar inteira",
+    problema:
+      "Um ERP legado em PHP procedural rodava toda a operação — do centro cirúrgico ao faturamento, da ouvidoria ao departamento pessoal. Regras críticas viviam espalhadas em código sem documentação, e o sistema não podia parar um dia sequer para ser reescrito.",
+    solucao:
+      "Migração módulo a módulo para Laravel 12 com Inertia e Vue 3, mantendo o legado em produção durante toda a transição. Em vez de forçar o banco antigo a caber num ORM, mantive paridade com o schema existente e construí um design system para que centenas de telas falassem a mesma língua visual.",
+    destaques: [
+      "Centro cirúrgico com CRM analítico, KPIs ordenáveis e campanhas",
+      "Auditoria de acessos com busca otimizada e exportação em PDF timbrado",
+      "Lembretes de agenda enviados por WhatsApp via tarefa agendada",
+      "Painel de autorização de RH: movimentação, substituição e triagem de candidatos",
+      "Dashboard de transportes recalculado direto no banco, dispensando uma API externa",
+      "Ambiente do time padronizado em Docker com aplicação, fila e build separados",
+    ],
+    numeros: [
+      { valor: "60+", label: "módulos migrados" },
+      { valor: "303", label: "telas em Vue" },
+      { valor: "20", label: "componentes de design system" },
+    ],
+    stack: ["Laravel 12", "Inertia.js", "Vue 3", "MySQL", "Tailwind", "Docker"],
+    codigoFechado: true,
+  },
+  {
+    slug: "celly",
+    nome: "Celly Arquivos Digitais",
+    tipo: "Cliente",
+    periodo: "2026",
+    tagline: "Loja de produtos digitais com entrega automática e programa de afiliados",
+    problema:
+      "Uma loja de arquivos digitais para festas operava em WooCommerce, com entrega manual dos arquivos após cada compra e nenhum controle sobre quem baixou o quê. Crescer significava trabalho manual proporcional.",
+    solucao:
+      "Reconstruí a loja em Laravel com arquitetura separada por domínios de negócio — catálogo, comércio, acessos, afiliados, marketing, conteúdo. Gateway de pagamento e armazenamento são interfaces com implementação falsa para teste, e os domínios conversam por eventos: um estorno propaga sozinho para o acesso do cliente, a comissão do afiliado e o cupom usado.",
+    destaques: [
+      "Checkout com Mercado Pago (Pix e cartão) e webhook idempotente",
+      "Entrega digital automática com prazo de expiração e log de cada download",
+      "Programa de afiliados completo: links rastreáveis, encurtador próprio, comissões e pagamentos",
+      "Migração do catálogo de 215 produtos vindos do WooCommerce, em processamento de fundo",
+      "Modo manutenção com um clique, link secreto de bypass e captura de avise-me",
+      "Feed de catálogo para WhatsApp e Instagram Shopping, sitemap e redirects 301 com contador",
+    ],
+    numeros: [
+      { valor: "7", label: "domínios isolados" },
+      { valor: "55", label: "tabelas" },
+      { valor: "215", label: "produtos migrados" },
+    ],
+    stack: ["Laravel 13", "Livewire 4", "Mercado Pago", "Cloudflare R2", "Deployer", "Nginx"],
+    codigoFechado: true,
+  },
+  {
+    slug: "saqua-local",
+    nome: "Saqua Local",
+    tipo: "Produto próprio",
+    periodo: "2026",
+    tagline: "Portal comunitário gratuito que conecta uma cidade inteira",
+    problema:
+      "Em Saquarema, encontrar um eletricista, uma vaga de emprego ou o horário do ônibus dependia de grupos de WhatsApp e de quem você conhecia. Quem trabalha por conta própria não tinha onde ser encontrado.",
+    solucao:
+      "Um portal gratuito e sem fins lucrativos com perfis de profissionais e empresas, vagas, currículos, classificados, turismo e transporte público. Optei por renderização no servidor em vez de SPA porque o objetivo é ser encontrado no Google — a decisão está documentada junto com as regras de negócio numeradas.",
+    destaques: [
+      "Perfis com horário por dia, região de atuação, serviços com preço e contato direto por WhatsApp",
+      "Triagem de conteúdo assistida por IA com registro de decisões e fila de revisão humana",
+      "Avaliações não anônimas, denúncias e painel de moderação auditado",
+      "Vagas, currículos completos e feed personalizado de oportunidades",
+      "Doações por Pix com payload EMV e QR code gerados no próprio servidor",
+      "Busca sem resultado vira backlog de taxonomia — o que falta no portal é medido",
+    ],
+    numeros: [
+      { valor: "642", label: "testes automatizados" },
+      { valor: "79", label: "componentes de UI" },
+      { valor: "54", label: "tabelas" },
+    ],
+    stack: ["Laravel 13", "Blade SSR", "Alpine.js", "Tailwind 4", "MySQL", "GitHub Actions"],
+    codigoFechado: true,
+  },
+  {
+    slug: "bussola-nautica",
+    nome: "Bússola Náutica",
+    tipo: "Produto próprio",
+    periodo: "2026",
+    tagline: "Plataforma gamificada de preparação para a prova de Arrais Amador",
+    problema:
+      "Quem estuda para a habilitação náutica da Marinha enfrenta uma norma extensa e apostilas sem retorno. Não havia como simular a prova real nem medir o próprio progresso.",
+    solucao:
+      "Uma plataforma com banco de questões comentadas, simulados cronometrados no formato oficial e uma camada de gamificação com tema náutico — que existe para resolver o problema real do estudo solitário: constância. Construída em dupla, com assinatura paga e um canal B2B de escolas parceiras.",
+    destaques: [
+      "Simulado cronometrado com salvamento a cada resposta e revisão comentada",
+      "Gamificação temática: XP, ligas, streak, ranking, loja de itens e duelo entre alunos",
+      "Assinatura via Pagar.me com webhook, cupons e códigos de acesso resgatáveis",
+      "Painel de escolas parceiras com indicações e comissões",
+      "Login sem senha por magic link, Google OAuth e notificações push",
+      "LGPD: exportação de dados e exclusão de conta pelo próprio aluno",
+    ],
+    numeros: [
+      { valor: "74", label: "telas em Vue" },
+      { valor: "36", label: "tabelas" },
+      { valor: "7", label: "middlewares de acesso" },
+    ],
+    stack: ["Laravel 12", "Inertia + Vue 3", "Pinia", "Pagar.me", "Web Push", "Vitest", "Docker"],
+    codigoFechado: true,
+  },
+  {
+    slug: "oml",
+    nome: "OML — Orquestrador de Migração Legada",
+    tipo: "Open source",
+    periodo: "2026 · MIT",
+    tagline: "O método que uso para migrar legado com IA sem inventar regra de negócio",
+    problema:
+      "A IA é excelente em produzir código que parece certo e péssima em saber o que o sistema antigo realmente fazia. Numa migração, essa combinação é uma armadilha: ela preenche as lacunas com imaginação — e a imaginação dela não roda na folha de pagamento do cliente.",
+    solucao:
+      "Um orquestrador em português que obriga a investigação antes da escrita. Ele mapeia telas, banco, permissões, integrações e regras de negócio com a linhagem de cada dado documentada, e só então codifica — parando em dois pontos de aprovação humana: o design, antes da primeira tela, e a homologação, depois de cada uma.",
+    destaques: [
+      "Três modos de operação: migração, construção do zero e híbrido",
+      "Inventários versionados de banco, permissões, integrações, componentes e riscos",
+      "Histórico de migração tela a tela, com status e homologação rastreáveis",
+      "No modo greenfield já nasce com LGPD, acessibilidade WCAG 2.2 AA, SEO e CI",
+      "Documentação explícita sobre o que a ferramenta não faz — nada de solução mágica",
+    ],
+    numeros: [
+      { valor: "MIT", label: "licença aberta" },
+      { valor: "2", label: "portões de aprovação humana" },
+      { valor: "PT-BR", label: "documentação" },
+    ],
+    stack: ["Claude Code", "Markdown", "YAML", "Shell"],
+    link: { href: "https://github.com/tiburcioMartim/OML", rotulo: "Ver no GitHub" },
+    codigoFechado: false,
+  },
+  {
+    slug: "sistema-financeiro",
+    nome: "Sistema Financeiro",
+    tipo: "Produto próprio",
+    periodo: "2026",
+    tagline: "Controle de finanças pessoais — a peça onde o rigor de código aparece inteiro",
+    problema:
+      "Planilha de finanças doméstica não avisa vencimento, não projeta caixa e não entende 'paguei 80 de luz ontem'.",
+    solucao:
+      "Aplicação de lançamentos, contas a pagar, recorrências, dívidas e manutenção de veículos, com um chat que interpreta frases informais e gera uma prévia editável — só grava depois da confirmação. É o projeto onde a disciplina de código está mais completa: validação e autorização extraídas, tipagem estrita e testes cobrindo o isolamento entre usuários.",
+    destaques: [
+      "Validação em Form Requests e autorização em Policies, não espalhadas no controller",
+      "TypeScript com verificação de tipos no CI, além de lint e testes separados",
+      "Quitação com desconto automático e status parcial",
+      "KPIs em regime de caixa, gráficos por período e exportação em CSV",
+      "Sobe inteiro com um comando via Docker — aplicação, banco, fila e agendador",
+    ],
+    numeros: [
+      { valor: "164", label: "testes automatizados" },
+      { valor: "14", label: "Form Requests" },
+      { valor: "8", label: "Policies" },
+    ],
+    stack: ["Laravel 12", "Inertia + Vue 3", "TypeScript", "MySQL", "Docker"],
+    codigoFechado: true,
+  },
+];
