@@ -5,6 +5,7 @@ export const perfil = {
   // Uma frase, sem jargão, que funciona para recrutador e para cliente.
   resumo:
     "Construo e modernizo sistemas web que sustentam operação real — de ERP hospitalar a loja com pagamento e entrega automática.",
+  site: "https://martimtiburciodev.com.br",
   email: "tiburciomartim@gmail.com",
   linkedin: "https://www.linkedin.com/in/martimtiburcio-dev/",
   github: "https://github.com/tiburcioMartim",

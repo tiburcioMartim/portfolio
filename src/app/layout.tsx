@@ -13,18 +13,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// TODO: quando o domínio estiver registrado, definir metadataBase e a imagem
-// de compartilhamento (opengraph-image.tsx) para os links no LinkedIn/WhatsApp.
 export const metadata: Metadata = {
+  metadataBase: new URL(perfil.site),
   title: `${perfil.nome} — ${perfil.papel}`,
   description: perfil.resumo,
   keywords: ["desenvolvedor full stack", "Laravel", "Vue.js", "PHP", "Rio de Janeiro", "Saquarema"],
   authors: [{ name: perfil.nome, url: perfil.linkedin }],
+  alternates: { canonical: "/" },
   openGraph: {
     title: `${perfil.nome} — ${perfil.papel}`,
     description: perfil.resumo,
+    url: "/",
+    siteName: perfil.nome,
     locale: "pt_BR",
     type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${perfil.nome} — ${perfil.papel}`,
+    description: perfil.resumo,
   },
 };
 
