@@ -1,0 +1,33 @@
+#
+# Confere se tudo voltou depois de um reinício.
+#
+#   cp verificacao-pos-boot.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable verificacao-pos-boot
+#
+# Ver o resultado do último reinício:
+#   journalctl -u verificacao-pos-boot -b
+
+[Unit]
+Description=Confere serviços e sites depois do reinício
+# Espera a rede estar realmente utilizável — sem isto o teste de HTTP falharia
+# por falta de rota, e não por site fora do ar.
+After=network-online.target nginx.service mysql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+
+# Dá tempo para as aplicações PHP e o Node terminarem de subir. Perguntar cedo
+# demais produziria alarme falso justamente na hora em que ninguém está
+# acordado para conferir.
+ExecStartPre=/bin/sleep 45
+ExecStart=/usr/local/bin/verificacao-pos-boot
+
+# O objetivo é registrar, não derrubar nada. Um resultado ruim aparece no
+# journal e no estado da unidade, mas não impede o resto do boot.
+SuccessExitStatus=0 1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

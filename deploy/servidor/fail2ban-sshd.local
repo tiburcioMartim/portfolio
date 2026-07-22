@@ -1,0 +1,36 @@
+# Bloqueio de força bruta no SSH.
+#
+# Instalado em /etc/fail2ban/jail.local
+#
+# Contexto: esta VPS levava ~3.200 tentativas de login por semana, de 43 IPs
+# diferentes, sendo 378 mirando root. Não é ataque direcionado — são robôs
+# varrendo faixas de IP inteiras. O firewall não resolve porque a porta 22
+# precisa mesmo estar aberta; o que faltava era alguém contar os erros e
+# fechar a porta na cara de quem insiste.
+
+[DEFAULT]
+# Quem erra 4 vezes some por 2 horas. Suficiente para inviabilizar força bruta
+# (um robô que testaria milhares de senhas por hora passa a testar 4) sem
+# transformar um erro de digitação seu num castigo longo.
+maxretry = 4
+findtime = 10m
+bantime  = 2h
+
+# Reincidente leva mais tempo: cada bloqueio novo dobra a duração, até um teto.
+bantime.increment = true
+bantime.factor = 2
+bantime.maxtime = 1w
+
+# Nunca bloquear a própria máquina — senão um serviço local que erre alguma
+# coisa consegue cortar o acesso de todo mundo.
+ignoreip = 127.0.0.1/8 ::1
+
+# Nesta máquina o sshd escreve no journald, não em /var/log/auth.log.
+backend = systemd
+
+[sshd]
+enabled = true
+port    = ssh
+# `aggressive` também pega varredura que nem chega a tentar senha, como quem
+# se conecta e desiste, e os pedidos de usuário inexistente.
+mode    = aggressive
