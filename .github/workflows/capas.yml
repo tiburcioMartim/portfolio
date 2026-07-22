@@ -1,0 +1,45 @@
+#
+# Atualiza sozinho as capas dos projetos que estão em modo automático.
+#
+# Roda no runner do GitHub, de graça, e conversa com o site por uma rota que só
+# aceita trocar imagem de capa. O segredo guardado aqui NÃO dá acesso à VPS —
+# essa foi a razão de existir a rota em vez de um deploy por SSH agendado.
+#
+# Antes de o agendamento servir para alguma coisa, configure em
+# Settings › Secrets and variables › Actions:
+#   CAPTURA_TOKEN  — o mesmo valor de /etc/portfolio.env no servidor
+#
+name: Capas dos projetos
+
+on:
+  schedule:
+    # Segundas às 6h de Brasília (09:00 UTC). Cedo o bastante para você ver o
+    # resultado antes de qualquer pessoa abrir o portfólio na semana.
+    - cron: "0 9 * * 1"
+  # Para disparar à mão quando você acabou de mexer num dos sites.
+  workflow_dispatch:
+
+jobs:
+  capturar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Instalar o Playwright
+        # `--no-save` de propósito: o navegador é ferramenta desta rotina, não
+        # dependência do site. No pacote de deploy ele seria peso morto.
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Capturar e enviar
+        env:
+          SITE: https://martimtiburciodev.com.br
+          CAPTURA_TOKEN: ${{ secrets.CAPTURA_TOKEN }}
+        run: node scripts/capturar.mjs
