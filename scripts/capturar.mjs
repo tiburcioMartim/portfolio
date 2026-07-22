@@ -51,6 +51,41 @@ if (alvos.length === 0) {
   process.exit(0);
 }
 
+/**
+ * Aceita o aviso de cookies antes da foto.
+ *
+ * Todo site brasileiro sério tem um por causa da LGPD, e ele mora exatamente
+ * onde atrapalha: colado no rodapé, tapando um terço da captura. Cada execução
+ * abre um navegador limpo, então o banner reaparece sempre — não adianta
+ * aceitar uma vez.
+ *
+ * O texto é casado de forma estrita para não clicar em "OK" de outra coisa e
+ * acabar fotografando uma página que ninguém pediu.
+ */
+const TEXTOS_DE_ACEITE =
+  /^(aceitar( todos| tudo)?|aceito|entendi( e aceito)?|concordo|permitir( todos)?|accept( all)?)$/i;
+
+async function dispensarBannerDeCookies(pagina) {
+  try {
+    const candidatos = await pagina.locator('button, [role="button"]').all();
+
+    for (const candidato of candidatos) {
+      const texto = ((await candidato.textContent()) ?? "").trim();
+      if (!TEXTOS_DE_ACEITE.test(texto)) continue;
+      if (!(await candidato.isVisible())) continue;
+
+      await candidato.click({ timeout: 2000 });
+      // O banner costuma sair com transição; sem isto a foto pega ele no meio
+      // do caminho, meio transparente.
+      await pagina.waitForTimeout(1200);
+      return texto;
+    }
+  } catch {
+    // Banner é acessório: se não deu para fechar, a foto sai com ele mesmo.
+  }
+  return null;
+}
+
 const navegador = await chromium.launch();
 // Viewport de notebook: é o enquadramento em que as pessoas realmente veem
 // esses sistemas, e o recorte 16:9 do card cai bem em cima dele.
@@ -73,6 +108,8 @@ for (const alvo of alvos) {
     // Fonte e imagem que chegam atrasadas apareceriam como caixa vazia na
     // foto. Um respiro curto resolve o que o networkidle não pega.
     await pagina.waitForTimeout(2500);
+
+    await dispensarBannerDeCookies(pagina);
 
     const imagem = await pagina.screenshot({ type: "png" });
 
