@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+# Recebe um pacote do portfólio pela entrada padrão e o entrega para ativação.
+#
+# É o ÚNICO comando que a chave do GitHub consegue executar nesta máquina: o
+# `authorized_keys` do usuário `publicador` usa `command="..."`, então mesmo
+# quem roubar a chave não abre shell, não lista arquivo e não vira root.
+#
+# O que chega pelo GitHub é conteúdo não confiável. Por isso a extração
+# acontece AQUI, como `publicador` — um usuário que não é dono de nada. Só
+# depois, com o pacote já no disco e conferido, é que chamamos a parte
+# privilegiada.
+
+set -euo pipefail
+
+ENTRADA=/var/www/martimtiburciodev/entrada
+
+# Ignoramos deliberadamente o SSH_ORIGINAL_COMMAND. Ele é o que o cliente pediu
+# para rodar, e obedecer a isso seria justamente o buraco que o comando forçado
+# existe para fechar.
+
+rm -rf "$ENTRADA/novo"
+mkdir -p "$ENTRADA/novo"
+
+# --no-same-owner e --no-same-permissions: o tar não dita dono nem modo dos
+# arquivos. Sem isso, um pacote malicioso escolheria as permissões do que
+# deixa no disco.
+tar -xzf - -C "$ENTRADA/novo" --no-same-owner --no-same-permissions
+
+# Confere que veio mesmo um build do Next, e não qualquer coisa empacotada.
+for exigido in server.js .next/BUILD_ID .next/static; do
+  if [ ! -e "$ENTRADA/novo/$exigido" ]; then
+    echo "Pacote inválido: falta $exigido. Nada foi publicado." >&2
+    rm -rf "$ENTRADA/novo"
+    exit 1
+  fi
+done
+
+echo "Pacote recebido e conferido ($(du -sh "$ENTRADA/novo" | cut -f1))."
+
+# A única coisa que este usuário pode fazer com privilégio, e sem passar
+# argumento algum — o script do outro lado decide tudo sozinho.
+sudo -n /usr/local/bin/portfolio-ativar

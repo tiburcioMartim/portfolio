@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# Promove o pacote recebido a release ativo. Roda como root, chamado por
+# `sudo -n` a partir do portfolio-receber-release.
+#
+# Não aceita argumento nenhum, de propósito: todo caminho aqui é fixo. Um
+# script privilegiado que recebe parâmetro de quem está do outro lado da rede
+# é um convite, e a única razão de este arquivo existir separado do outro é
+# manter a superfície privilegiada do tamanho de uma folha.
+
+set -euo pipefail
+
+BASE=/var/www/martimtiburciodev
+ENTRADA="$BASE/entrada/novo"
+
+if [ ! -f "$ENTRADA/server.js" ]; then
+  echo "Não há pacote conferido para ativar." >&2
+  exit 1
+fi
+
+RELEASE="$BASE/releases/$(date +%Y%m%d%H%M%S)"
+
+mv "$ENTRADA" "$RELEASE"
+
+# O systemd monta `.next/cache` como caminho de escrita e falha na subida se
+# ele não existir — o serviço reiniciaria em laço com 226/NAMESPACE.
+mkdir -p "$RELEASE/.next/cache"
+chown -R portfolio:portfolio "$RELEASE"
+
+# Guarda para onde voltar se o release novo não subir.
+ANTERIOR="$(readlink -f "$BASE/current" || true)"
+
+# Troca atômica: cria ao lado e renomeia por cima, então não existe instante
+# em que `current` aponte para lugar nenhum.
+ln -sfn "$RELEASE" "$BASE/current.novo"
+mv -Tf "$BASE/current.novo" "$BASE/current"
+
+systemctl restart portfolio
+
+# Só declara vitória depois de o serviço responder de verdade.
+for tentativa in $(seq 1 25); do
+  if curl -sS -o /dev/null --max-time 3 http://127.0.0.1:3001/ 2>/dev/null; then
+    echo "Publicado: $(basename "$RELEASE") (respondeu na tentativa $tentativa)."
+
+    # Mantém os cinco últimos. Voltar mais que isso nunca aconteceu, e disco é finito.
+    cd "$BASE/releases" && ls -1dt */ | tail -n +6 | xargs -r rm -rf
+    exit 0
+  fi
+  sleep 1
+done
+
+# Não subiu: volta para o release anterior em vez de deixar o site fora do ar.
+echo "O release novo não respondeu. Voltando para o anterior." >&2
+
+if [ -n "$ANTERIOR" ] && [ -f "$ANTERIOR/server.js" ]; then
+  ln -sfn "$ANTERIOR" "$BASE/current.novo"
+  mv -Tf "$BASE/current.novo" "$BASE/current"
+  systemctl restart portfolio
+  echo "Revertido para $(basename "$ANTERIOR")." >&2
+fi
+
+exit 1

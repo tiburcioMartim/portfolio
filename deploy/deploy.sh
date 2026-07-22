@@ -20,7 +20,22 @@
 
 set -euo pipefail
 
-SERVIDOR="${SERVIDOR:-root@187.127.30.234}"
+# O endereço do servidor NÃO fica versionado: este repositório é público, e
+# publicar o IP de uma máquina que hospeda produção de cliente — ainda por cima
+# anunciando que ela aceita login como root — é entregar meio caminho andado a
+# quem estiver varrendo a internet. Defina em `deploy/servidor.local` (ignorado
+# pelo git) ou na variável de ambiente.
+if [ -z "${SERVIDOR:-}" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/servidor.local" ]; then
+  SERVIDOR="$(tr -d '[:space:]' < "$(dirname "${BASH_SOURCE[0]}")/servidor.local")"
+fi
+
+if [ -z "${SERVIDOR:-}" ]; then
+  echo "Falta o servidor. Defina de uma das duas formas:" >&2
+  echo "  echo 'usuario@endereco' > deploy/servidor.local" >&2
+  echo "  SERVIDOR=usuario@endereco ./deploy/deploy.sh" >&2
+  exit 1
+fi
+
 BASE="${BASE:-/var/www/martimtiburciodev}"
 SERVICO="${SERVICO:-portfolio}"
 DOMINIO="${DOMINIO:-martimtiburciodev.com.br}"

@@ -1,0 +1,123 @@
+#
+# Publica o portfólio na VPS a cada push na main.
+#
+# A chave guardada aqui NÃO abre shell na máquina: o `authorized_keys` do
+# usuário `publicador` usa comando forçado, então ela só consegue entregar um
+# pacote para o script de publicação. Quem roubar o segredo consegue publicar
+# uma versão do portfólio — não consegue ler banco, listar arquivo nem virar
+# root numa máquina que hospeda produção de cliente.
+#
+# Segredos necessários (Settings › Secrets and variables › Actions):
+#   VPS_SSH_KEY      chave privada dedicada a esta rotina
+#   VPS_DESTINO      publicador@endereço
+#   VPS_KNOWN_HOSTS  chave pública do host, para não publicar no servidor errado
+#
+name: Publicar
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "README.md"
+      - ".github/workflows/capas.yml"
+  workflow_dispatch:
+
+# Dois pushes seguidos não podem publicar ao mesmo tempo: o segundo espera,
+# em vez de os dois disputarem a troca do release.
+concurrency:
+  group: publicar-portfolio
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tipos
+        run: npm run tipos
+
+      - name: Build
+        # `--webpack` porque o Turbopack ainda não gera `output: standalone`,
+        # que é o que permite publicar sem `npm install` na VPS.
+        run: npx next build --webpack
+
+      - name: Montar o pacote
+        run: |
+          set -euo pipefail
+          test -f .next/standalone/server.js
+
+          # O standalone não copia estes por padrão; sem eles o site sobe sem CSS.
+          cp -r .next/static .next/standalone/.next/static
+          [ -d public ] && cp -r public .next/standalone/public
+
+          # O systemd monta este caminho como área de escrita e falha na subida
+          # se ele não existir.
+          mkdir -p .next/standalone/.next/cache
+
+          echo "pacote: $(du -sh .next/standalone | cut -f1)"
+
+      - name: Conferir os vizinhos antes
+        # A VPS hospeda produção de cliente. Registramos o estado antes para
+        # que, se algo cair, dê para saber se já estava caído.
+        run: |
+          for d in saqualocal.com.br cellyarquivosdigitais.com.br bussolanautica.com.br; do
+            printf '  %-32s HTTP %s\n' "$d" "$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 https://$d/ || echo FALHA)"
+          done
+
+      - name: Enviar e publicar
+        env:
+          CHAVE: ${{ secrets.VPS_SSH_KEY }}
+          DESTINO: ${{ secrets.VPS_DESTINO }}
+          HOSTS_CONHECIDOS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "$CHAVE" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$HOSTS_CONHECIDOS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+          # O comando pedido aqui é ignorado pelo servidor — o comando forçado
+          # do authorized_keys é que manda. Mandamos o pacote pela entrada
+          # padrão, que é a única coisa que ele lê.
+          tar -czf - -C .next/standalone . \
+            | ssh -i ~/.ssh/id_ed25519 \
+                  -o StrictHostKeyChecking=yes \
+                  -o UserKnownHostsFile=~/.ssh/known_hosts \
+                  -o BatchMode=yes \
+                  "$DESTINO" publicar
+
+      - name: Conferir o resultado
+        run: |
+          set -euo pipefail
+          for rota in / /admin/entrar; do
+            codigo="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "https://martimtiburciodev.com.br$rota")"
+            printf '  %-16s HTTP %s\n' "$rota" "$codigo"
+            [ "$codigo" = "200" ] || { echo "O site não respondeu 200 em $rota." >&2; exit 1; }
+          done
+
+          echo "Vizinhos, depois:"
+          for d in saqualocal.com.br cellyarquivosdigitais.com.br bussolanautica.com.br; do
+            codigo="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "https://$d/" || echo FALHA)"
+            printf '  %-32s HTTP %s\n' "$d" "$codigo"
+            [ "$codigo" = "200" ] || echo "    ATENÇÃO: $d não respondeu 200." >&2
+          done
+
+      - name: Apagar a chave
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

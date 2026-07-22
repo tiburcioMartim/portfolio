@@ -96,18 +96,51 @@ src/
 
 ## Publicar
 
+**Push na `main` publica sozinho** (`.github/workflows/publicar.yml`): o runner
+roda lint, tipos e build, empacota e entrega na VPS, que troca o release e
+reinicia o serviço. Se o release novo não responder, o script do servidor volta
+para o anterior em vez de deixar o site fora do ar.
+
+Para publicar da própria máquina — útil se o GitHub estiver fora:
+
 ```bash
+echo 'usuario@endereco' > deploy/servidor.local   # uma vez; fora do git
 ./deploy/deploy.sh
 ```
 
-Build local → pacote `standalone` → rsync para um release novo → troca o
-symlink → reinicia o serviço. O diretório de dados nunca é tocado, e o script
-confere antes e depois que os sites vizinhos na VPS continuam de pé.
+Em ambos, o diretório de dados nunca é tocado: o que você escreveu pelo painel
+sobrevive a qualquer publicação.
 
-Primeira vez: `deploy/preparar-servidor.sh` cria usuário, diretórios e
-segredos. O nginx é o único passo manual — o arquivo do servidor tem o bloco
-HTTPS que o certbot escreveu, e copiar o do repositório por cima derruba o
-HTTPS. A referência está em `deploy/nginx/`.
+### Por que a chave do GitHub não é perigosa
+
+A VPS hospeda produção de cliente, então a chave guardada no GitHub **não abre
+shell**. O `authorized_keys` do usuário `publicador` usa comando forçado:
+
+```
+command="/usr/local/bin/portfolio-receber-release",no-pty,... ssh-ed25519 AAAA…
+```
+
+Qualquer comando que o cliente peça é ignorado — só roda aquele script, que lê
+o pacote da entrada padrão. E ele é dividido em dois de propósito
+(`deploy/servidor/`):
+
+- **`portfolio-receber-release`** roda como `publicador`, um usuário que não é
+  dono de nada. É ele que extrai o pacote, porque conteúdo vindo da internet
+  não deve ser desempacotado como root.
+- **`portfolio-ativar`** é o único com `sudo`, e **não aceita argumento algum**:
+  todo caminho é fixo. Script privilegiado que recebe parâmetro de quem está do
+  outro lado da rede é convite.
+
+O teto do estrago de um segredo vazado é publicar uma versão do próprio
+portfólio — que roda como usuário sem privilégio, sem acesso a `/home` e sem
+escrever fora da pasta de dados, por causa do endurecimento no systemd.
+
+### Primeira vez num servidor novo
+
+`deploy/preparar-servidor.sh` cria usuário, diretórios e segredos. O nginx é o
+único passo manual — o arquivo do servidor tem o bloco HTTPS que o certbot
+escreveu, e copiar o do repositório por cima derruba o HTTPS. A referência está
+em `deploy/nginx/`.
 
 ## Capas automáticas
 

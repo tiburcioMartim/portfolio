@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Endereço do servidor de publicação — fora do git, o repo é público.
+/deploy/servidor.local
