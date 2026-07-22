@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { perfil } from "@/data/perfil";
+import { lerPerfil } from "@/lib/conteudo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,27 +13,42 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(perfil.site),
-  title: `${perfil.nome} — ${perfil.papel}`,
-  description: perfil.resumo,
-  keywords: ["desenvolvedor full stack", "Laravel", "Vue.js", "PHP", "Rio de Janeiro", "Saquarema"],
-  authors: [{ name: perfil.nome, url: perfil.linkedin }],
-  alternates: { canonical: "/" },
-  openGraph: {
+/**
+ * Os metadados saem do conteúdo editável, então trocar o resumo no admin muda
+ * também o título da aba e o texto que o LinkedIn mostra — sem republicar.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { perfil } = await lerPerfil();
+
+  return {
+    metadataBase: new URL(perfil.site),
     title: `${perfil.nome} — ${perfil.papel}`,
     description: perfil.resumo,
-    url: "/",
-    siteName: perfil.nome,
-    locale: "pt_BR",
-    type: "profile",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${perfil.nome} — ${perfil.papel}`,
-    description: perfil.resumo,
-  },
-};
+    keywords: [
+      "desenvolvedor full stack",
+      "Laravel",
+      "Vue.js",
+      "PHP",
+      "Rio de Janeiro",
+      "Saquarema",
+    ],
+    authors: [{ name: perfil.nome, url: perfil.linkedin }],
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: `${perfil.nome} — ${perfil.papel}`,
+      description: perfil.resumo,
+      url: "/",
+      siteName: perfil.nome,
+      locale: "pt_BR",
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${perfil.nome} — ${perfil.papel}`,
+      description: perfil.resumo,
+    },
+  };
+}
 
 /**
  * Aplica o tema salvo antes da primeira pintura. Sem isso, quem escolheu o tema

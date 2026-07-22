@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Conteúdo editado pelo admin. O que o repositório versiona é o ponto de
+# partida, em src/data/seed/ — isto aqui é o estado vivo de cada máquina.
+/conteudo/
+
 # vercel
 .vercel
 

@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
-import { perfil } from "@/data/perfil";
 
-// Exigido pelo `output: export`: gerado uma vez, no build.
-export const dynamic = "force-static";
+import { lerPerfil } from "@/lib/conteudo";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { perfil } = await lerPerfil();
+
   return [
     {
       url: `${perfil.site}/`,

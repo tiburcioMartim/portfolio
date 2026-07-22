@@ -4,9 +4,18 @@ import Projetos from "@/components/Projetos";
 import Metodo from "@/components/Metodo";
 import Experiencia from "@/components/Experiencia";
 import Contato from "@/components/Contato";
-import { perfil } from "@/data/perfil";
+import { lerPerfil } from "@/lib/conteudo";
 
-export default function Home() {
+/**
+ * O conteúdo vem de arquivos em disco, que o Next não tem como saber que
+ * mudaram. Sem isto a página seria congelada no build e uma edição no admin
+ * só apareceria na próxima publicação — exatamente o contrário do objetivo.
+ */
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const { perfil } = await lerPerfil();
+
   return (
     <>
       <a
