@@ -1,17 +1,25 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // O site inteiro é conhecido em tempo de build, então exportamos HTML puro.
-  // Na VPS isso vira apenas arquivos servidos pelo nginx: nenhum processo Node
-  // rodando ao lado da produção que já existe na máquina.
-  output: "export",
+  // O site deixou de ser HTML puro quando ganhou área administrativa: login e
+  // gravação de conteúdo precisam de servidor. `standalone` empacota o que roda
+  // em produção junto das dependências necessárias, então a VPS recebe uma
+  // pasta pronta e não precisa de `npm install` a cada publicação.
+  output: "standalone",
 
-  // Sem servidor, não há otimização de imagem sob demanda.
-  images: { unoptimized: true },
+  images: {
+    // As fotos já chegam redimensionadas e em WebP pelo próprio admin. Otimizar
+    // de novo a cada visita gastaria CPU da VPS — compartilhada com produção de
+    // cliente — para refazer um trabalho que já foi feito no envio.
+    unoptimized: true,
+  },
 
-  // Gera /projetos/index.html em vez de /projetos.html, que é o que o nginx
-  // espera servir quando a URL não traz extensão.
-  trailingSlash: true,
+  experimental: {
+    serverActions: {
+      // O padrão é 1 MB, o que reprova qualquer foto vinda de celular.
+      bodySizeLimit: "15mb",
+    },
+  },
 };
 
 export default nextConfig;

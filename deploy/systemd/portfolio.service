@@ -1,0 +1,70 @@
+#
+# Serviço do portfólio — martimtiburciodev.com.br
+#
+# Instalação (uma vez, como root na VPS):
+#   cp portfolio.service /etc/systemd/system/
+#   systemctl daemon-reload
+#   systemctl enable --now portfolio
+#
+# Depois disso o deploy só precisa de `systemctl restart portfolio`.
+#
+# ATENÇÃO: esta máquina hospeda produção de cliente (loja da Celly, Saqua
+# Local, Bússola Náutica). Os limites abaixo não são burocracia — são o que
+# garante que um vazamento de memória no portfólio não derrube o que fatura.
+
+[Unit]
+Description=Portfolio Martim Tiburcio (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+
+# Usuário sem privilégio e sem shell. Se alguém escapar do processo Node, sai
+# num usuário que não pode virar root nem ler o que é dos outros sites.
+User=portfolio
+Group=portfolio
+
+WorkingDirectory=/var/www/martimtiburciodev/current
+ExecStart=/usr/bin/node server.js
+
+# Segredos e caminhos. O arquivo é 600 e pertence ao root: o serviço lê na
+# subida, mas o usuário `portfolio` não consegue abrir sozinho.
+EnvironmentFile=/etc/portfolio.env
+
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3001
+
+# Cai, sobe de novo. Sem isto, uma exceção não tratada às 3h da manhã deixa o
+# portfólio fora do ar até alguém perceber.
+Restart=always
+RestartSec=3
+
+# Teto de memória. O portfólio serve uma página; se passar disto é bug, e o
+# kernel mata este processo em vez de escolher uma vítima entre os outros
+# sites da máquina.
+MemoryMax=400M
+MemoryHigh=300M
+# Nunca ser o escolhido do OOM killer antes das aplicações que faturam.
+OOMScoreAdjust=500
+
+# Endurecimento: o serviço não precisa de nada além de ler o próprio release e
+# escrever no diretório de dados.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+
+# O único lugar onde ele pode escrever: conteúdo, fotos e o cache do Next.
+ReadWritePaths=/var/www/martimtiburciodev/dados
+ReadWritePaths=/var/www/martimtiburciodev/current/.next/cache
+
+[Install]
+WantedBy=multi-user.target
