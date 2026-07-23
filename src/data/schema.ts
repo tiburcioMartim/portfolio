@@ -41,7 +41,12 @@ export const projetoSchema = z.object({
   periodo: textoCurto,
   /** Chamada curta, entendível por quem não é técnico. */
   tagline: textoCurto,
-  problema: textoCurto,
+  /**
+   * Opcional: nem todo projeto nasce de um problema que valha contar. Quando
+   * vazio, o card simplesmente não mostra o bloco em vez de exibir uma seção
+   * com texto inventado para preenchê-la.
+   */
+  problema: textoCurto.optional().or(z.literal("")),
   solucao: textoCurto,
   /** Entregas concretas — o que existe e funciona. */
   destaques: listaDeTextos,
@@ -54,6 +59,12 @@ export const projetoSchema = z.object({
   /** Código fechado: sem link de repositório. */
   codigoFechado: z.boolean().default(true),
   capa: capaSchema.default({ modo: "nenhuma" }),
+  /**
+   * Peso do projeto na vitrine. Os principais viram card inteiro; os
+   * secundários vão para uma lista compacta no fim da seção, para somarem
+   * volume de trabalho sem competir com os casos que sustentam a página.
+   */
+  secundario: z.boolean().default(false),
   /** Fora da vitrine, mas preservado — despublicar não é apagar. */
   publicado: z.boolean().default(true),
 });

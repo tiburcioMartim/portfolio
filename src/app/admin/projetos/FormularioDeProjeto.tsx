@@ -100,8 +100,9 @@ export default function FormularioDeProjeto({
       >
         <Area
           rotulo="O problema"
+          dica="Opcional. Vazio, o card não mostra o bloco."
           linhas={5}
-          valor={projeto.problema}
+          valor={projeto.problema ?? ""}
           aoMudar={(problema) => mudar("problema", problema)}
         />
         <Area
@@ -188,6 +189,13 @@ export default function FormularioDeProjeto({
             />
           </div>
         ) : null}
+
+        <Caixa
+          rotulo="Secundário"
+          dica="Vai para a lista compacta no fim da seção, em vez de virar card inteiro."
+          marcado={projeto.secundario}
+          aoMudar={(secundario) => mudar("secundario", secundario)}
+        />
 
         <Caixa
           rotulo="Publicado"

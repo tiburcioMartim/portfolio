@@ -20,6 +20,7 @@ const vazio: Projeto = {
   stack: [],
   codigoFechado: true,
   capa: { modo: "nenhuma" },
+  secundario: false,
   publicado: false,
 };
 

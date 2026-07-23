@@ -65,10 +65,12 @@ function Card({ projeto }: { projeto: Projeto }) {
         <p className="mt-2 text-accent-ink">{projeto.tagline}</p>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
-          <div>
-            <p className="eyebrow">O problema</p>
-            <p className="mt-2 leading-relaxed text-muted text-pretty">{projeto.problema}</p>
-          </div>
+          {projeto.problema ? (
+            <div>
+              <p className="eyebrow">O problema</p>
+              <p className="mt-2 leading-relaxed text-muted text-pretty">{projeto.problema}</p>
+            </div>
+          ) : null}
           <div>
             <p className="eyebrow">O que eu fiz</p>
             <p className="mt-2 leading-relaxed text-muted text-pretty">{projeto.solucao}</p>
@@ -149,8 +151,43 @@ function Card({ projeto }: { projeto: Projeto }) {
   );
 }
 
+/**
+ * Card enxuto dos projetos secundários. Deliberadamente mais leve que o `Card`:
+ * sem capa, sem números, sem lista de entregas e sem fundo elevado — o que
+ * sobra é nome, chamada, o que foi feito e a stack. É esse contraste, e não uma
+ * legenda dizendo "menos importante", que coloca cada grupo no seu lugar.
+ */
+function CardCompacto({ projeto }: { projeto: Projeto }) {
+  return (
+    <article className="flex flex-col rounded-lg border border-line p-5">
+      <h4 className="text-base font-semibold tracking-tight text-ink">{projeto.nome}</h4>
+      <p className="mt-1 text-sm text-accent-ink">{projeto.tagline}</p>
+      <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">{projeto.solucao}</p>
+
+      {/* Mesmo princípio do card grande: stack e link ancorados na base, para
+          que os cards de uma linha não terminem cada um numa altura. */}
+      <div className="mt-auto pt-4">
+        <p className="font-mono text-xs text-faint">{projeto.stack.join(" · ")}</p>
+
+        {projeto.link ? (
+          <a
+            href={projeto.link.href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="mt-3 inline-block text-sm font-medium text-accent-ink underline-offset-4 hover:underline"
+          >
+            {projeto.link.rotulo} ↗
+          </a>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
 export default async function Projetos() {
   const projetos = await lerProjetosPublicados();
+  const principais = projetos.filter((p) => !p.secundario);
+  const secundarios = projetos.filter((p) => p.secundario);
 
   return (
     <Secao
@@ -160,10 +197,26 @@ export default async function Projetos() {
       descricao="Cada um destes está em uso ou em produção. Os números vieram do próprio código, não de estimativa. A maior parte é de código fechado — o que dá para mostrar é o problema, a decisão e o resultado."
     >
       <div className="grid gap-6 lg:grid-cols-2">
-        {projetos.map((p) => (
+        {principais.map((p) => (
           <Card key={p.slug} projeto={p} />
         ))}
       </div>
+
+      {secundarios.length > 0 && (
+        <div className="mt-16 border-t border-line pt-10">
+          <p className="eyebrow">Também entreguei</p>
+          <p className="mt-3 max-w-2xl leading-relaxed text-muted text-pretty">
+            Sistemas menores que os de cima, todos na Rede Hospital Casa e todos em produção.
+            Estão aqui pelo volume e pela variedade do que a operação pediu — não como vitrine.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {secundarios.map((p) => (
+              <CardCompacto key={p.slug} projeto={p} />
+            ))}
+          </div>
+        </div>
+      )}
     </Secao>
   );
 }
