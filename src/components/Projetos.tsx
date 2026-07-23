@@ -26,12 +26,12 @@ function Capa({ projeto }: { projeto: Projeto }) {
   if (!capa.arquivo) return null;
 
   return (
-    <div className="relative aspect-[16/9] border-b border-line bg-inset sm:aspect-[21/9]">
+    <div className="relative aspect-[16/9] border-b border-line bg-inset">
       <Image
         src={`/uploads/${capa.arquivo}`}
         alt={`Interface do projeto ${projeto.nome}`}
         fill
-        sizes="(min-width: 1280px) 72rem, 100vw"
+        sizes="(min-width: 1024px) 34rem, 100vw"
         className="object-cover object-top"
       />
 
@@ -52,10 +52,10 @@ function formatarData(iso: string): string {
 
 function Card({ projeto }: { projeto: Projeto }) {
   return (
-    <article className="overflow-hidden rounded-xl border border-line bg-elevated">
+    <article className="flex flex-col overflow-hidden rounded-xl border border-line bg-elevated">
       <Capa projeto={projeto} />
 
-      <div className="p-6 sm:p-8">
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
         <div className="flex flex-wrap items-center gap-3">
           <Etiqueta tipo={projeto.tipo} />
           <span className="font-mono text-xs text-faint">{projeto.periodo}</span>
@@ -64,7 +64,7 @@ function Card({ projeto }: { projeto: Projeto }) {
         <h3 className="mt-4 text-2xl font-semibold tracking-tight">{projeto.nome}</h3>
         <p className="mt-2 text-accent-ink">{projeto.tagline}</p>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
           <div>
             <p className="eyebrow">O problema</p>
             <p className="mt-2 leading-relaxed text-muted text-pretty">{projeto.problema}</p>
@@ -94,7 +94,7 @@ function Card({ projeto }: { projeto: Projeto }) {
         {projeto.destaques.length > 0 && (
           <div className="mt-8">
             <p className="eyebrow">Entregas</p>
-            <ul className="mt-3 grid gap-2 lg:grid-cols-2">
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
               {projeto.destaques.map((d) => (
                 <li key={d} className="flex gap-2.5 text-sm leading-relaxed text-muted">
                   <svg
@@ -114,31 +114,35 @@ function Card({ projeto }: { projeto: Projeto }) {
           </div>
         )}
 
-        <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-line pt-6">
-          {projeto.stack.map((t) => (
-            <span
-              key={t}
-              className="rounded-md border border-line px-2.5 py-1 font-mono text-xs text-muted"
-            >
-              {t}
-            </span>
-          ))}
-
-          <span className="ml-auto flex items-center gap-4">
-            {projeto.codigoFechado ? (
-              <span className="font-mono text-xs text-faint">código fechado</span>
-            ) : null}
-            {projeto.link ? (
-              <a
-                href={projeto.link.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-sm font-medium text-accent-ink underline-offset-4 hover:underline"
+        {/* mt-auto ancora o rodapé na base para que cards vizinhos, de alturas
+            diferentes, terminem alinhados na mesma linha da grade. */}
+        <div className="mt-auto pt-8">
+          <div className="flex flex-wrap items-center gap-2 border-t border-line pt-6">
+            {projeto.stack.map((t) => (
+              <span
+                key={t}
+                className="rounded-md border border-line px-2.5 py-1 font-mono text-xs text-muted"
               >
-                {projeto.link.rotulo} ↗
-              </a>
-            ) : null}
-          </span>
+                {t}
+              </span>
+            ))}
+
+            <span className="ml-auto flex items-center gap-4">
+              {projeto.codigoFechado ? (
+                <span className="font-mono text-xs text-faint">código fechado</span>
+              ) : null}
+              {projeto.link ? (
+                <a
+                  href={projeto.link.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-sm font-medium text-accent-ink underline-offset-4 hover:underline"
+                >
+                  {projeto.link.rotulo} ↗
+                </a>
+              ) : null}
+            </span>
+          </div>
         </div>
       </div>
     </article>
@@ -155,7 +159,7 @@ export default async function Projetos() {
       titulo="Sistemas que sustentam operação real"
       descricao="Cada um destes está em uso ou em produção. Os números vieram do próprio código, não de estimativa. A maior parte é de código fechado — o que dá para mostrar é o problema, a decisão e o resultado."
     >
-      <div className="grid gap-6">
+      <div className="grid gap-6 lg:grid-cols-2">
         {projetos.map((p) => (
           <Card key={p.slug} projeto={p} />
         ))}
