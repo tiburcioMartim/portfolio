@@ -40,10 +40,12 @@ export default function Foto({
         className="object-cover"
       />
 
-      {/* Véu quase imperceptível que assenta a foto na paleta do site, para ela
-          não brigar com o fundo em nenhum dos dois temas. */}
+      {/* Véu que assenta a foto na paleta do site. Quem decide se ele aparece é o
+          tema (`--veu-foto-opacidade`): no escuro é uma vinheta com a cor do fundo,
+          no claro fica zerado — ali o mesmo véu era névoa branca sobre o rosto. */}
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/25 to-transparent"
+        style={{ opacity: "var(--veu-foto-opacidade)" }}
         aria-hidden
       />
     </div>

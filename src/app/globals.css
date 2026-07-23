@@ -16,6 +16,10 @@
   --accent: #e8a33d;
   --accent-soft: #2f2413;
   --accent-text: #f0b45c;
+  /* Quanto do véu da foto aparece. O véu é o fundo da página subindo pelo
+     rodapé da imagem: no escuro vira vinheta, no claro viraria névoa leitosa
+     sobre o rosto — por isso lá ele é zerado em vez de existir mais fraco. */
+  --veu-foto-opacidade: 1;
 }
 
 @media (prefers-color-scheme: light) {
@@ -31,6 +35,7 @@
     --accent: #a86a12;
     --accent-soft: #f7ecd9;
     --accent-text: #8f5a0d;
+    --veu-foto-opacidade: 0;
   }
 }
 
@@ -46,6 +51,7 @@
   --accent: #a86a12;
   --accent-soft: #f7ecd9;
   --accent-text: #8f5a0d;
+  --veu-foto-opacidade: 0;
 }
 
 @theme inline {
