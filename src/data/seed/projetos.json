@@ -41,7 +41,8 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
   },
   {
     "slug": "celly",
@@ -89,7 +90,8 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
   },
   {
     "slug": "saqua-local",
@@ -137,7 +139,8 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
   },
   {
     "slug": "bussola-nautica",
@@ -186,7 +189,8 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
   },
   {
     "slug": "oml",
@@ -231,7 +235,8 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
   },
   {
     "slug": "sistema-financeiro",
@@ -273,6 +278,168 @@
     "capa": {
       "modo": "nenhuma"
     },
-    "publicado": true
+    "publicado": true,
+    "secundario": false
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "portal-de-vagas",
+    "nome": "Portal de Vagas",
+    "tagline": "Site público de carreiras da rede hospitalar",
+    "solucao": "Aplicação pública renderizada no servidor (decisão tomada para ser encontrada no Google) com listagem e página de vaga, cadastro do candidato, currículo completo, candidatura, banco de talentos e central de privacidade com exportação e exclusão de dados. Domínio e banco próprios, isolados do ERP: as vagas chegam por integração assinada e as candidaturas voltam para o ATS interno, com reconciliação e propagação de exclusão nos dois lados. Autoria integral, 81 commits, 29 arquivos e 120 testes automatizados cobrindo SEO, LGPD, acessibilidade e integração.",
+    "stack": [
+      "Laravel 13",
+      "Livewire"
+    ]
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "portal-do-colaborador",
+    "nome": "Portal do Colaborador",
+    "tagline": "Intranet dos funcionários exposta na internet",
+    "solucao": "Aplicação full-stack em produção que reúne notícias, feedbacks, solicitações, ensino corporativo (trilhas, cursos, provas e certificado), recompensas, RH (espelho de ponto integrado ao Kairos, férias, consignado, perda e dano), conversa com o RH e Central de Privacidade. O acesso começa no público: auto-cadastro com verificação de e-mail, recuperação de senha e reativação de conta; a sessão é JWT em cookie, com SSO a partir do ERP e personificação auditada para suporte. Autoria integral, cerca de 92 commits e 38 telas em Vue.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3"
+    ],
+    "link": {
+      "href": "https://colaborador.grupohospitalcasa.com",
+      "rotulo": "Ver o portal"
+    }
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "canal-de-confianca",
+    "nome": "Canal de Confiança",
+    "tagline": "Canal de ética e denúncias anônimo, com protocolo",
+    "solucao": "Mini-aplicação pública em produção, deliberadamente fora do ERP e sem framework por exigência de isolamento, onde o relato pode ser anônimo ou identificado, gera protocolo e é acompanhado pelo próprio denunciante. O back-office atende a comissão de ética com triagem por status e SLA, anexos, mensagens automáticas e aviso aos responsáveis por WhatsApp. Cerca de 3.600 linhas e 36 commits, com proteção CSRF, limite de consultas por minuto e trilha de acesso.",
+    "stack": [
+      "PHP puro",
+      "MySQL"
+    ],
+    "link": {
+      "href": "https://canaldeconfianca.grupohospitalcasa.com/",
+      "rotulo": "Ver o canal"
+    }
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "orcamento-cirurgico-publico",
+    "nome": "Orçamento Cirúrgico Público",
+    "tagline": "Captação de orçamento pelo paciente, sem login",
+    "solucao": "Formulário público em produção que substituiu o pedido por telefone: o paciente escolhe unidade, convênio e uma ou mais cirurgias do catálogo TUSS, marca itens fora do pacote e informa a autorização do convênio. Cada envio abre uma solicitação no painel do Centro Cirúrgico e notifica os destinatários por e-mail e WhatsApp; a precificação e o envio do PDF acontecem depois, do lado interno. 14 migrações e 18 commits, tela de 856 linhas, com limite de envios por IP.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3"
+    ],
+    "link": {
+      "href": "https://erp.grupohospitalcasa.com/orcamento",
+      "rotulo": "Ver o formulário"
+    }
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "agendamento-cirurgico-publico",
+    "nome": "Agendamento Cirúrgico Público",
+    "tagline": "Pedido de data de cirurgia, sem login",
+    "solucao": "Formulário público que espelha o de orçamento e fecha o funil do paciente particular: múltiplas cirurgias, até três datas de preferência e vínculo automático com um orçamento já enviado. Alimenta o mesmo painel do Centro Cirúrgico, com aviso por e-mail e WhatsApp e a lista de convênios atendidos vinda do catálogo legado. 4 migrações, 8 commits e tela de 818 linhas.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3"
+    ],
+    "link": {
+      "href": "https://erp.grupohospitalcasa.com/agendamento",
+      "rotulo": "Ver o formulário"
+    }
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "ouvidoria-a-beira-do-leito",
+    "nome": "Ouvidoria à Beira do Leito",
+    "tagline": "Manifestação por QR Code no quarto",
+    "solucao": "Página pública, uma por leito, aberta pelo QR Code impresso no quarto: paciente ou acompanhante registra a manifestação pelo próprio celular, sem app e sem login, e o registro entra direto na ouvidoria do sistema legado já roteado para o setor responsável. A geração dos QR por unidade e leito é uma tela interna do ERP, e a mesma base atende o registro de presença da ronda digital. Tela pública de 586 linhas.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3"
+    ]
+  },
+  {
+    "tipo": "Trabalho",
+    "periodo": "2026",
+    "destaques": [],
+    "numeros": [],
+    "codigoFechado": true,
+    "capa": {
+      "modo": "nenhuma"
+    },
+    "secundario": true,
+    "publicado": true,
+    "slug": "qr-code-dinamico",
+    "nome": "QR Code Dinâmico",
+    "tagline": "Encurtador institucional com destino editável",
+    "solucao": "Gerador interno que devolve um endereço público curto e permanente: o QR impresso nunca expira porque aponta para o próprio ERP, o destino pode ser trocado sem reimprimir o material e cada leitura é contada. Cada pessoa enxerga apenas os códigos que criou, e a visão completa é uma permissão separada.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3"
+    ]
   }
 ]
