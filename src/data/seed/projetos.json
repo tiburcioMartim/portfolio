@@ -81,6 +81,10 @@
       "Deployer",
       "Nginx"
     ],
+    "link": {
+      "href": "https://cellyarquivosdigitais.com.br",
+      "rotulo": "Ver a loja"
+    },
     "codigoFechado": true,
     "capa": {
       "modo": "nenhuma"
@@ -125,6 +129,10 @@
       "MySQL",
       "GitHub Actions"
     ],
+    "link": {
+      "href": "https://saqualocal.com.br",
+      "rotulo": "Ver o portal"
+    },
     "codigoFechado": true,
     "capa": {
       "modo": "nenhuma"
@@ -170,6 +178,10 @@
       "Vitest",
       "Docker"
     ],
+    "link": {
+      "href": "https://bussolanautica.com.br",
+      "rotulo": "Ver a plataforma"
+    },
     "codigoFechado": true,
     "capa": {
       "modo": "nenhuma"
